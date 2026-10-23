@@ -1,0 +1,26 @@
+services:
+  triapp:
+    build: .
+    container_name: triapp
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8010:8010"
+    env_file:                      # per-athlete Intervals.icu keys (TRIAPP_INTERVALS_KEY_<Athlete>, TRIAPP_INTERVALS_ID_<Athlete>)
+                                   # and APNs (TRIAPP_APNS_KEY_PATH=/out/secrets/AuthKey_<id>.p8, _KEY_ID, _TEAM_ID, _ENV): see push.py
+      - path: .env
+        required: false
+    environment:
+      TZ: ${TZ:-Europe/Lisbon}       # schedules (pipeline 05:00, morning push 07:30, quiet hours) run in this time zone
+      TRIAPP_ROOT: /data
+      TRIAPP_OUT: /out
+      TRIAPP_PY: python
+      TRIAPP_RCLONE_REMOTE: ${TRIAPP_RCLONE_REMOTE:-}
+      TRIAPP_COOKIE_SECURE: ${TRIAPP_COOKIE_SECURE:-1}
+      TRIAPP_LLM_URL: ${TRIAPP_LLM_URL:-http://host.docker.internal:11434}
+      TRIAPP_LLM_MODEL: ${TRIAPP_LLM_MODEL:-gemma4:e4b-it-qat}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ${TRIAPP_DATA_DIR:-~/triapp-data}:/data
+      - ${TRIAPP_OUT_DIR:-~/triapp-out}:/out
+      - ${RCLONE_CONFIG_DIR:-~/.config/rclone}:/root/.config/rclone

@@ -1,0 +1,18 @@
+{
+  "appId": "ai.laloop.trisquad",
+  "appName": "Tri Squad",
+  "webDir": "www",
+  "server": {
+    "url": "https://tri.laloop.ai",
+    "allowNavigation": ["tri.laloop.ai"],
+    "errorPath": "index.html"
+  },
+  "ios": {
+    "contentInset": "never",
+    "backgroundColor": "#111311",
+    "limitsNavigationsToAppBoundDomains": true
+  },
+  "plugins": {
+    "PushNotifications": { "presentationOptions": ["badge", "sound", "alert"] }
+  }
+}

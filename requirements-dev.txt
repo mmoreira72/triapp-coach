@@ -1,0 +1,3 @@
+# development only: tests and formatting
+pytest
+black

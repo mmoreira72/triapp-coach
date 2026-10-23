@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>route2892427612.kml</name>
+	<Style id="start_marker">
+		<IconStyle>
+			<Icon>
+				<href>https://static.mapmyfitness.com/d/mapping_api/stable/img/markers/start.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="kmlLineStyle">
+		<LineStyle>
+			<color>7f0000ff</color>
+			<width>4</width>
+		</LineStyle>
+	</Style>
+	<Style id="finish_marker">
+		<IconStyle>
+			<Icon>
+				<href>https://static.mapmyfitness.com/d/mapping_api/stable/img/markers/stop.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Placemark>
+		<name>PERCURSO DE NATAÇÃO LIDL STH</name>
+		<styleUrl>#kmlLineStyle</styleUrl>
+		<LineString>
+			<tessellate>1</tessellate>
+			<coordinates>
+				-8.90678033,38.51636554,0 -8.90631497,38.51597191,0 -8.90631497,38.51597191,0 -8.90227842,38.51783884,0 -8.90227842,38.51783884,0 -8.901705720000001,38.51735975,0 -8.901705720000001,38.51735975,0 -8.90606163,38.514144,0 -8.90606163,38.514144,0 -8.90834703,38.5149587,0 -8.90834703,38.5149587,0 -8.907054349999999,38.51334236,0 -8.907054349999999,38.51334236,0 -8.908560509999999,38.51204598,0 -8.908560509999999,38.51204598,0 -8.91040587,38.51328538,0 
+			</coordinates>
+		</LineString>
+	</Placemark>
+	<Placemark>
+		<name>PERCURSO DE NATAÇÃO LIDL STH</name>
+		<styleUrl>#start_marker</styleUrl>
+		<Point>
+			<coordinates>-8.90678033,38.51636554,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>PERCURSO DE NATAÇÃO LIDL STH</name>
+		<styleUrl>#finish_marker</styleUrl>
+		<Point>
+			<coordinates>-8.91040587,38.51328538,0</coordinates>
+		</Point>
+	</Placemark>
+</Document>
+</kml>

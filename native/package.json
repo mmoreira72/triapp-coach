@@ -1,0 +1,18 @@
+{
+  "name": "tri-squad-native",
+  "private": true,
+  "description": "Tri Squad iOS/Android shell (Capacitor): opens tri.laloop.ai and adds push, HealthKit, widget and on-device LLM",
+  "scripts": {
+    "sync": "cap sync",
+    "open:ios": "cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/ios": "^8.5.3",
+    "@capacitor/push-notifications": "^8.1.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.3"
+  }
+}

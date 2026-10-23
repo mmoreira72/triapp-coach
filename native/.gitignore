@@ -1,0 +1,6 @@
+node_modules/
+# local copy of capacitor-swift-pm with the xcframeworks (SPM cannot download binaries on this network); see README
+ios/vendor/
+ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/configuration/mirrors.json
+ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+ios/App/CapApp-SPM/Package.resolved

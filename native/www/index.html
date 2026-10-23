@@ -1,0 +1,20 @@
+<!doctype html><html lang="pt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tri Squad · sem rede</title>
+<style>
+:root{color-scheme:light dark;--plane:#f4f4f0;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--grid:#e1e0d9}
+@media(prefers-color-scheme:dark){:root{--plane:#111311;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a}}
+body{margin:0;background:var(--plane);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;padding:16px}
+main{max-width:380px;margin:64px auto;background:var(--surface);border:1px solid var(--grid);border-radius:10px;padding:24px;display:grid;gap:12px;text-align:center}
+img{width:64px;height:64px;margin:0 auto;border-radius:14px}h1{font-size:20px;margin:0}p{margin:0;color:var(--ink2);font-size:14px;line-height:1.5}
+button{font:inherit;padding:10px 16px;border-radius:8px;border:1px solid var(--grid);background:var(--plane);color:var(--ink);cursor:pointer}
+</style></head><body><main>
+<img src="icon.png" alt="">
+<h1>Sem ligação</h1>
+<p>O Tri Squad precisa de rede para mostrar os teus dados. Verifica a ligação e tenta outra vez.</p>
+<button type="button" onclick="location.href='https://tri.laloop.ai/'">Tentar outra vez</button>
+</main>
+<script>
+addEventListener('online', () => { location.href = 'https://tri.laloop.ai/'; });
+let n = 0; const t = setInterval(() => { if (++n > 10) return clearInterval(t); fetch('https://tri.laloop.ai/health', {cache: 'no-store'}).then(r => { if (r.ok) location.href = 'https://tri.laloop.ai/'; }).catch(() => {}); }, 3000);
+</script>
+</body></html>

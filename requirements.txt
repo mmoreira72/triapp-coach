@@ -1,0 +1,4 @@
+# pipeline (versions pinned to what runs on the box; parse_fit.py patches a private method of garmin-fit-sdk: retest before upgrading it)
+garmin-fit-sdk==21.217.0
+pandas==3.0.6
+numpy==2.5.3
