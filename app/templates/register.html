@@ -1,0 +1,24 @@
+<!doctype html><html lang="pt"><head><meta charset="utf-8">{{ pwa_head|safe }}<title>Tri Squad · criar conta</title>
+<style>
+:root{color-scheme:light dark;--plane:#f4f4f0;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--grid:#e1e0d9;--crit:#d03b3b}
+@media(prefers-color-scheme:dark){:root{--plane:#111311;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a}}
+body{margin:0;background:var(--plane);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;padding:16px}
+form{max-width:380px;margin:48px auto;background:var(--surface);border:1px solid var(--grid);border-radius:10px;padding:24px;display:grid;gap:12px}
+h1{font-size:22px;margin:0}p{margin:0;color:var(--ink2);font-size:14px;line-height:1.5}a{color:var(--ink)}
+input[type=text],input[type=email],input[type=password]{font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--grid);border-radius:8px;background:var(--plane);color:var(--ink)}
+label.chk{display:flex;gap:8px;align-items:flex-start;font-size:14px;color:var(--ink2)}
+button{font:inherit;padding:10px 14px;border:0;border-radius:8px;background:var(--ink);color:var(--surface);font-weight:600;cursor:pointer}
+.err{color:var(--crit);font-size:13px}
+</style></head><body>
+<form method="post" action="/registar">
+  <h1>Criar conta</h1>
+  <p>Cria a tua conta de atleta. Depois, o teu treinador associa-a aos teus dados do TrainingPeaks e passas a ver os teus treinos.</p>
+  <input type="text" name="name" placeholder="Nome" value="{{ name or '' }}" autocomplete="name" required maxlength="80">
+  <input type="email" name="email" placeholder="Email" value="{{ email or '' }}" autocomplete="username" required>
+  <input type="password" name="password" placeholder="Palavra-passe (8 caracteres ou mais)" autocomplete="new-password" required minlength="8">
+  <input type="password" name="password2" placeholder="Repete a palavra-passe" autocomplete="new-password" required minlength="8">
+  <label class="chk"><input type="checkbox" name="privacy" value="1" required> <span>Li e aceito a <a href="/privacidade" target="_blank">política de privacidade</a>.</span></label>
+  <button type="submit">Criar conta</button>
+  {% if error %}<p class="err">{{ error }}</p>{% endif %}
+  <p>Já tens conta? <a href="/login">Entrar</a></p>
+</form></body></html>

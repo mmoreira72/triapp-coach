@@ -1,0 +1,39 @@
+<!doctype html><html lang="pt"><head><meta charset="utf-8">{{ pwa_head|safe }}<title>Tri Squad · palavra-passe</title>
+<style>
+:root{color-scheme:light dark;--plane:#f4f4f0;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--grid:#e1e0d9;--crit:#d03b3b;--good:#2f8a4b}
+@media(prefers-color-scheme:dark){:root{--plane:#111311;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a;--good:#5cc27a}}
+body{margin:0;background:var(--plane);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;padding:16px}
+form,main{max-width:380px;margin:48px auto;background:var(--surface);border:1px solid var(--grid);border-radius:10px;padding:24px;display:grid;gap:12px}
+h1{font-size:22px;margin:0}p{margin:0;color:var(--ink2);font-size:14px;line-height:1.5}a{color:var(--ink)}
+input{font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--grid);border-radius:8px;background:var(--plane);color:var(--ink)}
+button{font:inherit;padding:10px 14px;border:0;border-radius:8px;background:var(--ink);color:var(--surface);font-weight:600;cursor:pointer}
+.err{color:var(--crit);font-size:13px}.ok{color:var(--good);font-weight:600}
+</style></head><body>
+{% if step == "ask" %}
+<form method="post" action="/recuperar">
+  <h1>Esqueci-me da palavra-passe</h1>
+  <p>Escreve o email da tua conta. Enviamos um link para escolheres uma nova, válido durante 1 hora.</p>
+  <input type="email" name="email" placeholder="Email" autocomplete="username" required autofocus>
+  <button type="submit">Enviar link</button>
+  <p><a href="/login">Voltar a entrar</a></p>
+</form>
+{% elif step == "sent" %}
+<main><h1>Vê o teu email</h1>
+<p class="ok">Se existir uma conta com esse email, enviámos um link para escolheres uma palavra-passe nova. Pode demorar um minuto; vê também o spam.</p>
+<p><a href="/login">Voltar a entrar</a></p></main>
+{% elif step == "new" %}
+<form method="post" action="/repor">
+  <h1>Nova palavra-passe</h1>
+  <p>Para {{ email }}.</p>
+  <input type="hidden" name="t" value="{{ token }}">
+  <input type="password" name="password" placeholder="Nova palavra-passe (8 caracteres ou mais)" autocomplete="new-password" required minlength="8" autofocus>
+  <input type="password" name="password2" placeholder="Repete a palavra-passe" autocomplete="new-password" required minlength="8">
+  <button type="submit">Guardar</button>
+  {% if error %}<p class="err">{{ error }}</p>{% endif %}
+</form>
+{% elif step == "done" %}
+<main><h1>Palavra-passe alterada</h1><p class="ok">Já podes entrar com a palavra-passe nova.</p><p><a href="/login">Entrar</a></p></main>
+{% else %}
+<main><h1>Link inválido ou expirado</h1><p>Os links valem 1 hora e só podem ser usados uma vez. Pede um novo.</p><p><a href="/recuperar">Pedir outro link</a></p></main>
+{% endif %}
+</body></html>

@@ -1,0 +1,78 @@
+<!doctype html><html lang="pt"><head><meta charset="utf-8">{{ pwa_head|safe }}<title>Tri Squad · ligações</title>
+<style>
+:root{color-scheme:light dark;--plane:#f4f4f0;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--grid:#e1e0d9;--crit:#d03b3b;--good:#2f8a4b}
+@media(prefers-color-scheme:dark){:root{--plane:#111311;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a;--good:#5cc27a}}
+body{margin:0;background:var(--plane);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;padding:16px;line-height:1.5}
+main{max-width:640px;margin:24px auto;display:grid;gap:16px}
+section{background:var(--surface);border:1px solid var(--grid);border-radius:10px;padding:20px;display:grid;gap:10px}
+h1{font-size:22px;margin:0}h2{font-size:17px;margin:0}p,li{margin:0;color:var(--ink2);font-size:14px}ol{margin:0;padding-left:20px;display:grid;gap:4px}
+label{font-size:13px;font-weight:600}
+input{font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--grid);border-radius:8px;background:var(--plane);color:var(--ink);width:100%;box-sizing:border-box}
+button{font:inherit;padding:10px 14px;border:0;border-radius:8px;background:var(--ink);color:var(--surface);font-weight:600;cursor:pointer;justify-self:start}
+.ok{color:var(--good);font-weight:600}.err{color:var(--crit);font-weight:600}.state{font-size:14px}
+a{color:var(--ink)}code{font-size:13px}
+</style></head><body><main>
+<h1>Ligações de {{ name }}</h1>
+<p>Liga o teu calendário do TrainingPeaks (o que o treinador planeia) e o Intervals.icu (o que fazes no relógio, mais o sono e a HRV). Os links e chaves ficam guardados só no servidor da equipa e nunca aparecem nesta página depois de guardados. <a href="/">Voltar ao painel</a></p>
+{% if msg %}<p class="{{ 'err' if error else 'ok' }}">{{ msg }}</p>{% endif %}
+
+<form method="post" action="/ligacoes"><section>
+  <h2>1. TrainingPeaks: o plano</h2>
+  <p class="state">Estado: {% if st.tp %}<span class="ok">ligado</span>{% else %}<span class="err">por ligar</span>{% endif %}</p>
+  <p><b>A. Confirma que o TrainingPeaks recebe os teus treinos</b> (é assim que o plano fica marcado como feito):</p>
+  <ol>
+    <li>Na app ou no site do TrainingPeaks: <b>Settings → Apps &amp; Devices</b> (ou "Device Sync").</li>
+    <li>Liga o teu relógio (<b>Garmin Connect</b>, Coros, Suunto, Polar ou Wahoo) e autoriza.</li>
+    <li>Faz um treino ou espera pelo próximo: deve aparecer no calendário do TrainingPeaks sozinho, ao lado do planeado.</li>
+  </ol>
+  <p><b>B. Copia o link do calendário</b> (só na conta <b>Premium</b>; a app do telemóvel não mostra este link):</p>
+  <ol>
+    <li>No computador, abre <a href="https://app.trainingpeaks.com" target="_blank" rel="noopener">app.trainingpeaks.com</a> e entra. No iPhone também dá: no Safari, carrega em <b>aA → Pedir site para computador</b>.</li>
+    <li>Carrega no teu nome ou na foto, em cima à direita → <b>Settings</b> → <b>Account</b> → desce até à secção <b>Calendar</b> ("Calendar Sync").</li>
+    <li>Copia o link que começa por <code>webcal://www.trainingpeaks.com/ical/</code> (no telemóvel: toca sem largar no link → Copiar).</li>
+    <li>Cola-o no campo abaixo e carrega em <b>Guardar e testar</b>: a página diz quantos treinos encontrou.</li>
+  </ol>
+  <label for="tp">Link do calendário</label>
+  <input id="tp" name="tp_ical" type="url" inputmode="url" placeholder="{{ 'guardado (cola outro para substituir)' if st.tp else 'webcal://www.trainingpeaks.com/ical/…' }}" autocomplete="off">
+  <p>Com isto, a app mostra o treino de hoje, envia o resumo da manhã e avisa o treinador quando falhas treinos. O TrainingPeaks pode demorar até 24 h a atualizar o link.</p>
+</section>
+
+<section>
+  <h2>2. Intervals.icu: o que fizeste</h2>
+  <p class="state">Estado: {% if st.intervals %}<span class="ok">ligado</span>{% if st.intervals_id %} ({{ st.intervals_id }}){% endif %}{% else %}<span class="err">por ligar</span>{% endif %}</p>
+  <p><b>A. Cria a conta</b> (é grátis):</p>
+  <ol>
+    <li>Abre <a href="https://intervals.icu" target="_blank" rel="noopener">intervals.icu</a> e carrega em <b>Sign Up</b>. Podes entrar com a conta Google, Apple ou com email e palavra-passe.</li>
+    <li>Na primeira entrada, o Intervals pede para ligares uma fonte de treinos: escolhe o teu relógio.</li>
+  </ol>
+  <p><b>B. Liga o relógio</b> (se não o fizeste no passo anterior):</p>
+  <ol>
+    <li>Menu (canto superior esquerdo) → <b>Settings</b> → secção <b>Connections</b>.</li>
+    <li>Em <b>Garmin</b> (ou Coros, Suunto, Polar, Wahoo, Zwift), carrega em <b>Connect</b>, entra na conta do relógio e autoriza tudo, incluindo <b>atividades</b> e <b>dados de saúde/wellness</b> (sono, FC em repouso, HRV).</li>
+    <li>Ativa a importação do histórico quando perguntar. O Garmin só deixa ir buscar o último ano; o resto vem do export do treinador.</li>
+  </ol>
+  <p><b>C. Gera a chave para a Tri Squad</b>:</p>
+  <ol>
+    <li>Em <b>Settings</b>, desce até ao fim da página, à secção <b>Developer Settings</b>.</li>
+    <li>Carrega em <b>Generate</b> (ou "API Key → Generate") e copia a chave que aparece.</li>
+    <li>Na mesma secção aparece o teu <b>Athlete ID</b>, algo como <code>i123456</code>. Copia-o também.</li>
+    <li>Cola os dois abaixo e carrega em <b>Guardar e testar</b>: a página confirma o teu nome no Intervals.</li>
+  </ol>
+  <p>A chave dá acesso de leitura aos teus treinos: não a partilhes com mais ninguém. Se a apagares no Intervals, a ligação deixa de funcionar e é só gerar outra.</p>
+  <label for="ik">Chave API</label>
+  <input id="ik" name="intervals_key" type="password" placeholder="{{ 'guardada (cola outra para substituir)' if st.intervals else 'chave do Intervals.icu' }}" autocomplete="off">
+  <label for="ii">Athlete ID</label>
+  <input id="ii" name="intervals_id" type="text" placeholder="{{ st.intervals_id or 'i123456' }}" autocomplete="off">
+  <p>Os treinos novos entram todos os dias às 5h. O Garmin só deixa o Intervals ir buscar o último ano.</p>
+</section>
+<section><button type="submit">Guardar e testar</button>
+<p>Para desligar uma ligação, escreve <code>apagar</code> no campo respetivo e guarda.</p></section>
+</form>
+<form method="post" action="/conta/apagar"><section>
+  <h2>Apagar a minha conta</h2>
+  <p>Apaga a tua conta e tudo o que ligaste ou escreveste na app: calendário, chave do Intervals, sono e HRV, notificações, motivos de treinos falhados, relatórios de prova e contexto. Os treinos que o treinador importou dos exports dele ficam com ele. Não dá para desfazer.</p>
+  <label for="cf">Escreve APAGAR para confirmar</label>
+  <input id="cf" name="confirm" type="text" autocomplete="off">
+  <button type="submit" style="background:#d03b3b">Apagar a minha conta</button>
+</section></form>
+</main></body></html>

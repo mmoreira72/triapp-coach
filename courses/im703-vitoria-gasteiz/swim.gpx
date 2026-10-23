@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx creator="StravaGPX" version="1.1" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+ <metadata>
+  <name>IRONMAN 70.3 Vitoria - ROKA Swim course</name>
+  <author>
+   <name>IRONMAN Europe Admin</name>
+   <link href="https://www.strava.com/athletes/152563527"/>
+  </author>
+  <copyright author="OpenStreetMap contributors">
+   <year>2020</year>
+   <license>https://www.openstreetmap.org/copyright</license>
+  </copyright>
+  <link href="https://www.strava.com/routes/3382740264122235280"/>
+ </metadata>
+ <trk>
+  <name>IRONMAN 70.3 Vitoria - ROKA Swim course</name>
+  <link href="https://www.strava.com/routes/3382740264122235280"/>
+  <type>swimming</type>
+  <trkseg>
+   <trkpt lat="42.953190000000006" lon="-2.5883700000000003">
+    <ele>544.76</ele>
+   </trkpt>
+   <trkpt lat="42.95255877030073" lon="-2.589186308600474">
+    <ele>537.0</ele>
+   </trkpt>
+   <trkpt lat="42.951927534801335" lon="-2.5900026004560854">
+    <ele>537.0</ele>
+   </trkpt>
+   <trkpt lat="42.95129629350207" lon="-2.590818875567394">
+    <ele>537.0</ele>
+   </trkpt>
+   <trkpt lat="42.95066504640318" lon="-2.5916351339349606">
+    <ele>537.0</ele>
+   </trkpt>
+   <trkpt lat="42.9500337935049" lon="-2.5924513755593432">
+    <ele>537.0</ele>
+   </trkpt>
+   <trkpt lat="42.9494025348075" lon="-2.5932676004411013">
+    <ele>537.0</ele>
+   </trkpt>
+   <trkpt lat="42.94877127031119" lon="-2.594083808580796">
+    <ele>537.0</ele>
+   </trkpt>
+   <trkpt lat="42.94814" lon="-2.5949000000000004">
+    <ele>537.0</ele>
+   </trkpt>
+   <trkpt lat="42.947645000023066" lon="-2.59508000149038">
+    <ele>537.0</ele>
+   </trkpt>
+   <trkpt lat="42.94715" lon="-2.59526">
+    <ele>537.0</ele>
+   </trkpt>
+   <trkpt lat="42.94667667225" lon="-2.5944566542549232">
+    <ele>537.0</ele>
+   </trkpt>
+   <trkpt lat="42.9462033388827" lon="-2.5936533208641">
+    <ele>537.0</ele>
+   </trkpt>
+   <trkpt lat="42.945730000000005" lon="-2.5928500000000003">
+    <ele>537.0</ele>
+   </trkpt>
+   <trkpt lat="42.946055001135406" lon="-2.592375002283497">
+    <ele>537.0</ele>
+   </trkpt>
+   <trkpt lat="42.946380000000005" lon="-2.5919000000000003">
+    <ele>537.0</ele>
+   </trkpt>
+   <trkpt lat="42.94715167088656" lon="-2.5914600275757413">
+    <ele>537.0</ele>
+   </trkpt>
+   <trkpt lat="42.947923340088145" lon="-2.591020044120287">
+    <ele>537.0</ele>
+   </trkpt>
+   <trkpt lat="42.948695007604655" lon="-2.5905800496330857">
+    <ele>537.13</ele>
+   </trkpt>
+   <trkpt lat="42.94946667343603" lon="-2.5901400441135882">
+    <ele>536.9900000000001</ele>
+   </trkpt>
+   <trkpt lat="42.95023833758216" lon="-2.5897000275612436">
+    <ele>536.98</ele>
+   </trkpt>
+   <trkpt lat="42.951010000000004" lon="-2.5892600000000003">
+    <ele>536.64</ele>
+   </trkpt>
+   <trkpt lat="42.95127" lon="-2.5881200000000004">
+    <ele>544.2600000000001</ele>
+   </trkpt>
+  </trkseg>
+ </trk>
+</gpx>

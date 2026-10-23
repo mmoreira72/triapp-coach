@@ -1,0 +1,202 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">{{ pwa_head|safe }}<title>Tri Squad · admin</title>
+<style>
+:root{color-scheme:light dark;--plane:#f4f4f0;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--grid:#e1e0d9;--good:#0ca30c;--crit:#d03b3b}
+@media(prefers-color-scheme:dark){:root{--plane:#111311;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a}}
+body{margin:0;background:var(--plane);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;padding:16px;font-size:14px}
+main{max-width:960px;margin:0 auto;display:grid;gap:16px}
+section{background:var(--surface);border:1px solid var(--grid);border-radius:10px;padding:16px 18px}
+h1{font-size:22px;margin:0}h2{font-size:17px;margin:0 0 10px}p{margin:4px 0;color:var(--ink2)}
+a{color:var(--ink)} nav{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+input,select{font:inherit;padding:8px 10px;border:1px solid var(--grid);border-radius:8px;background:var(--plane);color:var(--ink)}
+button{font:inherit;padding:8px 14px;border:0;border-radius:8px;background:var(--ink);color:var(--surface);font-weight:600;cursor:pointer}
+table{border-collapse:collapse;width:100%}td,th{text-align:left;padding:6px 8px;border-bottom:1px solid var(--grid)}
+.ok{color:var(--good)}.err{color:var(--crit)}pre{background:var(--plane);padding:10px;border-radius:8px;overflow:auto;max-height:260px;font-size:12px}
+.n{text-align:right;font-variant-numeric:tabular-nums}.warn{color:#b97800}.alerts{margin:8px 0;padding-left:18px}.alerts li{margin:3px 0}.scroll{overflow-x:auto}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.race-form{display:grid;gap:10px;margin-top:10px}.race-form label{display:grid;gap:2px;font-size:13px}
+.race-form fieldset{border:1px solid var(--grid,#ccc);border-radius:8px;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;padding:10px}
+.race-form label.inline{display:flex;gap:6px;align-items:center}.race-form input,.race-form select{font:inherit;padding:6px}
+</style></head><body><main>
+<nav><a href="/board">Team board</a>{% for a in athletes %}<a href="/board/{{ a }}">{{ a }}</a>{% endfor %}<form method="post" action="/logout" style="margin-left:auto"><button type="submit">Sign out</button></form></nav>
+<h1>Admin · {{ user.name }}</h1>
+{% if msg %}<p><b>{{ msg }}</b></p>{% endif %}
+
+<section>
+  <h2>Data refresh</h2>
+  <p>Drive folder: <code>{{ remote or "not configured (TRIAPP_RCLONE_REMOTE)" }}</code> · dashboard data last built: <b>{{ data_mtime or "never" }}</b></p>
+  <p>Status: <b class="{{ 'ok' if status.state == 'ok' else ('err' if status.state == 'error' else '') }}">{{ status.state }}</b>
+     {% if status.step %}· step {{ status.step }}{% endif %} {% if status.started %}· started {{ status.started }}{% endif %} {% if status.finished %}· finished {{ status.finished }}{% endif %} {% if status.by %}· by {{ status.by }}{% endif %}</p>
+  {% if status.error %}<p class="err">{{ status.error }}</p>{% endif %}
+  <form method="post" action="/admin/sync" class="row">
+    <button type="submit" {% if status.state == 'running' %}disabled{% endif %}>Sync Drive and rebuild</button>
+    <label><input type="checkbox" name="skip_drive" value="1"> rebuild only (skip Drive sync)</label>
+  </form>
+  <p>Drive layout expected inside the folder: one subfolder per export, named like <code>Athlete2_Pessoa_wko</code> or <code>Athlete2_Pessoa_Fit_Files</code>. A full run takes 30 to 40 minutes; reload this page to see progress.</p>
+</section>
+
+<section>
+  <h2>Reconciliação: origens vs app</h2>
+  {% if not recon %}<p>Ainda não há relatório. Corre uma atualização.</p>{% else %}
+  <p>Relatório de {{ recon.generated }} · {{ recon.total.source_sessions }} sessões nas origens, {{ recon.total.in_app }} na app; as restantes são duplicados entre fontes, treinos planeados e não feitos, ou folgas. Drive comparado com a box: <b>{{ "sim" if recon.drive_checked else "não (rclone indisponível)" }}</b>.</p>
+  {% if recon.alerts %}<ul class="alerts">{% for a in recon.alerts %}<li class="{{ 'err' if a.level == 'alert' else 'warn' }}"><b>{{ a.athlete }}</b>: {{ a.text }}</li>{% endfor %}</ul>
+  {% else %}<p class="ok"><b>Sem diferenças: tudo o que está nas origens está na app ou tem destino explicado.</b></p>{% endif %}
+  <div class="scroll"><table>
+    <tr><th>Atleta</th><th>Fonte</th><th class="n">Drive</th><th class="n">Box</th><th class="n">Lidos</th><th class="n">Erros de leitura</th><th class="n">Sessões</th><th class="n">Na app</th><th class="n">Duplicados</th><th class="n">Planeado, não feito</th><th class="n">Folga</th><th class="n">Sem dados</th><th>Última</th></tr>
+    {% for name, A in recon.athletes.items() %}{% for s in A.sources %}
+    <tr><td>{{ name if loop.first else "" }}</td><td>{{ "WKO (TrainingPeaks)" if s.kind == "wko" else "FIT (TP + Intervals)" }}</td>
+      <td class="n {{ 'err' if s.drive_missing_on_box }}">{{ s.drive_files if s.drive_files is defined else "–" }}</td><td class="n">{{ s.files_on_disk }}</td>
+      <td class="n {{ 'err' if s.n_unread }}">{{ s.files_indexed }}</td><td class="n {{ 'err' if s.parse_errors }}">{{ s.parse_errors }}</td><td class="n">{{ s.sessions }}</td><td class="n"><b>{{ s.in_app }}</b></td>
+      <td class="n">{{ s.duplicates }}</td>
+      <td class="n">{{ s.fates.get("planeado, não feito", 0) }}</td><td class="n">{{ s.fates.get("folga", 0) }}</td>
+      <td class="n {{ 'warn' if s.n_no_data }}">{{ s.n_no_data }}</td><td>{{ s.last_session or "–" }}</td></tr>
+    {% endfor %}{% endfor %}
+  </table></div>
+  <h2 style="margin-top:14px">Intervals.icu vs app (último ano)</h2>
+  {% if recon.intervals %}<table><tr><th>Atleta</th><th class="n">Atividades no Intervals</th><th class="n">Na app</th><th>Em falta</th></tr>
+    {% for name, r in recon.intervals.items() %}<tr><td>{{ name }}</td>{% if r.error %}<td colspan="3" class="warn">sem resposta ({{ r.error }})</td>{% else %}<td class="n">{{ r.listed }}</td><td class="n">{{ r.in_app }}</td>
+      <td class="{{ 'err' if r.missing }}">{% if r.missing %}{% for m in r.missing[:8] %}{{ m.date }} {{ m.name }} ({{ m.min }} min){% if not loop.last %}; {% endif %}{% endfor %}{% else %}nenhuma{% endif %}</td>{% endif %}</tr>{% endfor %}</table>
+  {% else %}<p>Nenhum atleta com chave do Intervals configurada.</p>{% endif %}
+  {% if recon.without_intervals %}<p>Sem Intervals (dependem só das exportações do treinador): {{ recon.without_intervals | join(", ") }}.</p>{% endif %}
+  <p>Na app = sessões feitas. Duplicados = a mesma sessão já entrou por outra fonte. Erros de leitura = o ficheiro do aparelho não foi lido; a sessão fica só com duração e TSS do TrainingPeaks. Sem dados = ficheiro lido mas sem sessão nem registos.</p>
+  {% endif %}
+</section>
+
+<section id="wko">
+  <h2>Sincronização automática do WKO5</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:6px 0 10px">
+    <form method="post" action="/admin/wko-sync"><button type="submit" {% if agent.pending and agent.requested_at %}disabled{% endif %}>Sincronizar WKO agora</button></form>
+    <span>
+      {% if agent.seen_at %}Mac do treinador:
+        {% if agent.online %}<b style="color:#2f8a4b">ligado</b> (último contacto há {{ agent.seen_min }} min){% else %}<b style="color:#d03b3b">sem contacto há {{ agent.seen_min }} min</b> (desligado ou a dormir){% endif %}
+      {% else %}<span class="muted">O agente ainda não contactou a box: descarrega o zip abaixo e volta a instalar.</span>{% endif %}
+    </span>
+  </div>
+  {% if agent.requested_at %}
+  <p class="muted">Pedido de {{ agent.requested_by }} às {{ agent.requested_at[11:16] }} UTC ·
+    {% if not agent.picked_at %}à espera do Mac…{% elif not agent.finished_at or agent.finished_at < agent.picked_at %}o Mac está a sincronizar (até ~15 min)…{% else %}terminado às {{ agent.finished_at[11:16] }} UTC{% endif %}</p>
+  {% endif %}
+  {% set rr = agent.result %}
+  {% if rr %}
+  <p>Último resultado ({{ agent.finished_at[:16].replace("T", " ") }} UTC):
+    {% if rr.crashed %}<b style="color:#d03b3b">o WKO5 crashou ao fim de {{ rr.minutes_open }} min</b>{% elif rr.wko_opened %}WKO5 sincronizou {{ rr.minutes_open }} min sem erros{% else %}só cópia (o WKO5 já estava aberto){% endif %}
+    · {{ rr.copied }} bibliotecas copiadas{% if rr.copied %}; a box vai buscar ao Drive daqui a uns minutos{% endif %}.</p>
+  {% endif %}
+  <p class="muted">Instala no teu Mac uma tarefa que, todas as noites às 04:00, abre o WKO5, sincroniza com o TrainingPeaks e copia as bibliotecas dos atletas para o Google Drive. Assim o plano e os treinos de todos os atletas ficam atualizados todos os dias, mesmo sem TrainingPeaks Premium.</p>
+  <ol class="muted">
+    <li><a href="/admin/coach-agent.zip">Descarregar o agente (coach-agent.zip)</a> e abrir o ficheiro em Transferências (cria a pasta coach-agent).</li>
+    <li>Abrir a app Terminal e escrever: <code>bash ~/Downloads/coach-agent/install.sh</code></li>
+    <li>Escolher a pasta do Google Drive dos atletas na janela que abre e carregar em Permitir nos avisos do macOS.</li>
+  </ol>
+  <p class="muted">Instruções completas no ficheiro LEIA-ME.md dentro da pasta.</p>
+  {% set ag = wko.agent %}
+  {% if ag %}
+  <p><b>Última noite:</b> {{ ag.run_at[:16].replace("T", " ") }} ·
+    {% if not ag.wko_opened %}WKO5 não foi aberto (já estava aberto ou não encontrado), só cópia
+    {% elif ag.crashed %}<span style="color:#d03b3b;font-weight:600">o WKO5 crashou ao fim de {{ ag.minutes_open }} min</span> (sincronização com o TrainingPeaks parou num treino com problema){% if ag.report %} · relatório {{ ag.report }}{% endif %}
+    {% else %}WKO5 sincronizou {{ ag.minutes_open }} min sem erros{% endif %}
+    · {{ ag.copied }} bibliotecas copiadas</p>
+  {% else %}
+  <p class="muted">O agente ainda não enviou o estado (versão antiga do agente: volta a instalar com o zip acima).</p>
+  {% endif %}
+  {% if wko.libraries %}
+  <table><tr><th>Biblioteca WKO5</th><th>Atualizada na box</th></tr>
+  {% for l in wko.libraries %}<tr><td>{{ l.name }}</td><td{% if l.days > 3 %} style="color:#d03b3b;font-weight:600"{% endif %}>{{ l.updated }} ({{ l.days }} dias)</td></tr>{% endfor %}
+  </table>
+  {% endif %}
+</section>
+<section id="provas">
+  <h2>Provas-alvo</h2>
+  <p class="muted">Provas no repositório: {{ repo_races|join(", ") }}.</p>
+  {% if custom_races %}
+  <table><tr><th>Prova</th><th>Data</th><th>Estado</th><th></th></tr>
+  {% for r in custom_races %}
+  <tr><td>{{ r.form.name }} ({% if r.form.sport == "run" %}corrida {{ r.form.run_km }} km{% else %}{{ r.form.distance }}{% endif %})</td><td>{{ r.form.date }}</td>
+    <td>{% set b = r.build %}
+      {% if b.state == "ok" and b.predicted %}pronta · {% if b.run %}corrida {{ b.run }} km{% else %}bike {{ b.bike }} km{% endif %}, +{{ b.ascent }} m
+      {% elif b.state == "ok" %}percurso pronto · {{ b.step or "a calcular previsões" }}
+      {% elif b.state == "error" %}<span style="color:#d03b3b">erro: {{ b.error }}</span>
+      {% else %}a criar{% if b.step %}: {{ b.step }}{% endif %}… (recarrega daqui a uns minutos){% endif %}</td>
+    <td><form method="post" action="/admin/race/{{ r.slug }}/delete" onsubmit="return confirm('Apagar {{ r.form.name }}?')"><button type="submit" class="ghost">Apagar</button></form></td></tr>
+  {% endfor %}
+  </table>
+  {% endif %}
+  <details {% if not custom_races %}open{% endif %} style="margin-top:12px">
+  <summary><b>Nova prova</b></summary>
+  <form method="post" action="/admin/race" enctype="multipart/form-data" class="race-form" id="race-form">
+    <label>Modalidade <select name="sport" id="race-sport"><option value="tri">Triatlo</option><option value="run">Corrida</option></select></label>
+    <label>Nome <input name="name" required placeholder="IRONMAN 70.3 Cascais / Maratona de Lisboa"></label>
+    <label>Data <input name="race_date" type="date" required min="{{ today }}"></label>
+    <label class="only-run">Distância <select name="run_distance" id="run-dist"><option value="10k">10 km</option><option value="21.1" selected>Meia maratona</option><option value="42.2">Maratona</option><option value="outra">Outra</option></select></label>
+    <label class="only-tri">Distância <select name="distance"><option value="70.3">70.3 (meio-ironman)</option><option value="T100">T100</option><option value="140.6">Ironman (140.6)</option></select></label>
+    <label>Hora de partida <input name="start_hour" type="number" min="4" max="18" value="8"></label>
+    <label>Link oficial <input name="url" type="url" placeholder="https://…"></label>
+    <fieldset class="only-tri"><legend>Natação</legend>
+      <label>km <input name="swim_km" required inputmode="decimal" placeholder="1,9"></label>
+      <label>voltas <input name="swim_laps" type="number" min="1" max="6" value="1"></label>
+      <label>local <select name="swim_type"><option>mar</option><option>lago</option><option>rio</option><option>albufeira</option></select></label>
+      <label>água °C <input name="water_temp_c" inputmode="decimal" placeholder="vazio = estimada"></label>
+    </fieldset>
+    <fieldset class="only-tri"><legend>Bike</legend>
+      <label>GPX (uma volta ou o percurso todo) <input name="bike_gpx" type="file" accept=".gpx,application/gpx+xml" required></label>
+      <label>km oficiais <input name="bike_km" required inputmode="decimal" placeholder="90"></label>
+      <label>voltas no GPX <input name="bike_laps" type="number" min="1" max="12" value="1"></label>
+      <label>abastecimentos (km) <input name="aid_bike" placeholder="20, 45, 70"></label>
+    </fieldset>
+    <fieldset><legend>Corrida</legend>
+      <label>GPX <span class="only-tri">(opcional)</span><span class="only-run">(obrigatório)</span> <input name="run_gpx" type="file" accept=".gpx,application/gpx+xml"></label>
+      <label id="run-km-label">km oficiais <input name="run_km" inputmode="decimal" placeholder="21,1"></label>
+      <label>voltas no GPX <input name="run_laps" type="number" min="1" max="12" value="1"></label>
+      <label>abastecimentos (km) <input name="aid_run" placeholder="2, 4, 6…"></label>
+    </fieldset>
+    <fieldset><legend>Atletas inscritos</legend>
+      {% for a in athlete_keys %}<label class="inline"><input type="checkbox" name="athletes" value="{{ a }}"> {{ a }}</label>{% endfor %}
+    </fieldset>
+    <p class="muted">A box trata do resto: altimetria (do GPX ou do modelo de terreno), subidas, 10 anos de meteorologia na janela da prova à hora da partida e a previsão de todos os atletas. Demora uns minutos.</p>
+    <button type="submit">Criar prova</button>
+  </form>
+  <script>
+  (()=>{const f=document.getElementById('race-form'),sp=document.getElementById('race-sport'),rd=document.getElementById('run-dist'),
+  kl=document.getElementById('run-km-label');
+  const sync=()=>{const run=sp.value==='run';
+    f.querySelectorAll('.only-tri').forEach(e=>e.hidden=run);f.querySelectorAll('.only-run').forEach(e=>e.hidden=!run);
+    f.querySelectorAll('.only-tri input[name=swim_km],.only-tri input[name=bike_km],.only-tri input[name=bike_gpx]').forEach(i=>i.required=!run);
+    f.querySelector('input[name=run_gpx]').required=run;
+    kl.hidden=run&&rd.value!=='outra';f.querySelector('input[name=run_km]').required=!run||rd.value==='outra';};
+  sp.addEventListener('change',sync);rd.addEventListener('change',sync);sync();})();
+  </script>
+  </details>
+</section>
+
+<section>
+  <h2>Pedidos de acesso</h2>
+  {% if pending %}
+  <p class="muted">Atletas que criaram conta e esperam ser associados aos dados deles. Escolhe o atleta do TrainingPeaks ou cria um novo (sem histórico: os treinos chegam pelo Intervals.icu dele).</p>
+  <table><tr><th>Nome</th><th>Email</th><th>Criada</th><th>Associar a</th></tr>
+  {% for p in pending %}<tr><td>{{ p.name }}</td><td>{{ p.email }}</td><td>{{ p.created_at[:10] }}</td><td>
+    <form method="post" action="/admin/associate" class="row" style="margin:0">
+      <input type="hidden" name="user_id" value="{{ p.id }}">
+      <select name="athlete"><option value="">atleta existente…</option>{% for k in athlete_keys %}<option value="{{ k }}">{{ k }}</option>{% endfor %}</select>
+      <input name="new_name" placeholder="ou nome do atleta novo">
+      <button type="submit">Associar</button>
+    </form></td></tr>{% endfor %}</table>
+  {% else %}<p class="muted">Nenhum pedido pendente.</p>{% endif %}
+</section>
+<section>
+  <h2>Users</h2>
+  <table><tr><th>Role</th><th>Name</th><th>Email</th><th>Athlete page</th><th>Since</th></tr>
+  {% for u in users %}<tr><td>{{ u.role }}</td><td>{{ u.name }}</td><td>{{ u.email }}</td><td>{{ u.athlete or '' }}</td><td>{{ u.created_at[:10] }}</td></tr>{% endfor %}</table>
+  <h2>Ligações dos atletas</h2>
+  <p class="muted">Cada atleta liga o seu TrainingPeaks (plano) e Intervals.icu (o que fez) na página Ligações.</p>
+  <table><tr><th>Atleta</th><th>TrainingPeaks</th><th>Intervals.icu</th><th>Atualizado</th></tr>
+  {% for a, st in links.items() %}<tr><td>{{ a }}</td><td>{{ 'ligado' if st.tp else '—' }}</td><td>{{ 'ligado' if st.intervals else '—' }}</td><td>{{ (st.updated_at or '')[:10] }}</td></tr>{% endfor %}</table>
+  <h2 style="margin-top:14px">Add or reset a user</h2>
+  <form method="post" action="/admin/users" class="row">
+    <input name="email" type="email" placeholder="email" required> <input name="name" placeholder="name" required>
+    <select name="role"><option value="athlete">athlete</option><option value="coach">coach</option></select>
+    <select name="athlete"><option value="">athlete page…</option>{% for a in athletes %}<option value="{{ a }}">{{ a }}</option>{% endfor %}</select>
+    <input name="password" type="text" placeholder="initial password (10+ chars)" minlength="10" required>
+    <button type="submit">Save</button>
+  </form>
+  <p>Saving an existing email resets that user's password. Users change their own password on their board page.</p>
+</section>
+</main></body></html>

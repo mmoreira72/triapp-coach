@@ -1,0 +1,9 @@
+data/
+.passphrase
+dashboard*.html
+!dashboard_template.html
+__pycache__/
+.venv/
+.DS_Store
+out/
+*.sqlite

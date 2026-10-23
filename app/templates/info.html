@@ -1,0 +1,61 @@
+<!doctype html><html lang="pt"><head><meta charset="utf-8">{{ pwa_head|safe }}<title>Tri Squad · {{ title }}</title>
+<style>
+:root{color-scheme:light dark;--plane:#f4f4f0;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--grid:#e1e0d9}
+@media(prefers-color-scheme:dark){:root{--plane:#111311;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a}}
+body{margin:0;background:var(--plane);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;padding:16px;line-height:1.55}
+main{max-width:720px;margin:24px auto;background:var(--surface);border:1px solid var(--grid);border-radius:10px;padding:24px 22px}
+nav{max-width:720px;margin:0 auto;display:flex;gap:14px;flex-wrap:wrap;font-size:14px}nav a{color:var(--ink)}
+h1{font-size:24px;margin:0 0 8px}h2{font-size:17px;margin:22px 0 6px}p,li{color:var(--ink2);font-size:15px}ul{padding-left:20px}
+img{width:72px;height:72px;border-radius:16px}a{color:var(--ink)}
+</style></head><body>
+<nav><a href="/sobre">Sobre</a><a href="/privacidade">Privacidade</a><a href="/suporte">Suporte</a><a href="/login">Entrar</a></nav>
+<main>
+{% if page == "sobre" %}
+<img src="/static/icons/icon-192.png" alt="">
+<h1>Tri Squad</h1>
+<p>A app de treino de um grupo de triatlo: junta o plano do treinador (TrainingPeaks) com o que cada atleta faz no relógio (Intervals.icu, Garmin, Apple Watch) e explica-o em linguagem simples.</p>
+<h2>O que faz</h2>
+<ul>
+<li><b>Hoje:</b> o treino planeado, para que serve e um relatório do dia anterior, todas as manhãs.</li>
+<li><b>Treinos:</b> cada sessão com o tipo de treino calculado pelo tempo em cada zona, planeado contra executado e treinos falhados com o motivo.</li>
+<li><b>Análise:</b> carga, forma e fadiga, curva de potência com mFTP e TTE, regras de treino aplicadas à semana e um assistente que responde a perguntas sobre os teus dados.</li>
+<li><b>Provas:</b> previsão de tempo para a prova-alvo e relatórios de prova do atleta e do treinador.</li>
+<li><b>No iPhone:</b> widgets com a forma e o treino de hoje, notificações e recuperação (sono, FC em repouso, HRV) do Apple Health.</li>
+</ul>
+<h2>Quem pode usar</h2>
+<p>Cria a tua conta na app ou em <a href="/registar">tri.laloop.ai/registar</a>; o teu treinador associa-a aos teus dados do TrainingPeaks e passas a ver os teus treinos.</p>
+{% elif page == "privacidade" %}
+<h1>Política de privacidade</h1>
+<p>Última atualização: {{ updated }}</p>
+<h2>Quem trata os dados</h2>
+<p>O Tri Squad é operado pelo grupo de treino a que pertences (o teu treinador e o administrador da app). Os dados ficam num servidor próprio do grupo, em Portugal; o acesso pela internet passa pela Cloudflare, que só encaminha o tráfego. Os emails (recuperação da palavra-passe e avisos ao treinador) são enviados através da Resend, que só recebe o endereço e a mensagem.</p>
+<h2>Que dados usamos</h2>
+<ul>
+<li><b>Conta:</b> nome, email e palavra-passe (guardada cifrada), que crias ao registar-te.</li>
+<li><b>Treinos:</b> sessões, ficheiros FIT, frequência cardíaca, potência, ritmo, distância e o plano do treinador, vindos do TrainingPeaks (export do treinador e calendário que tu ligas) e do Intervals.icu (com a chave que tu geras).</li>
+<li><b>Recuperação:</b> sono, FC em repouso e HRV, do Intervals.icu ou, na app iPhone e só com a tua autorização, do Apple Health. A app só lê estes três dados; nunca escreve no Apple Health.</li>
+<li><b>O que escreves:</b> lesões e pausas, motivos de treinos falhados, relatórios de prova, perguntas ao assistente.</li>
+<li><b>iPhone:</b> o identificador de notificações do aparelho, para te enviar o resumo da manhã e avisos.</li>
+</ul>
+<h2>Para que servem</h2>
+<p>Só para o treino: mostrar-te e ao teu treinador a carga, a forma, a recuperação e o cumprimento do plano, prever provas e escrever os resumos. Os textos e as respostas do assistente são gerados por um modelo de linguagem que corre no próprio servidor do grupo (ou no teu iPhone, quando estás sem rede); os teus dados não são enviados a serviços de inteligência artificial de terceiros.</p>
+<h2>Com quem são partilhados</h2>
+<p>Com o teu treinador, que vê a tua página. Os outros atletas do grupo não veem os teus dados. Não vendemos dados, não há publicidade nem ferramentas de análise de terceiros. Os dados do Apple Health nunca são usados para publicidade nem partilhados com terceiros.</p>
+<h2>Durante quanto tempo</h2>
+<p>Enquanto tiveres conta. Podes apagar a tua conta e os dados que tu ligaste (calendário, chave do Intervals, recuperação, notificações, o que escreveste) na app, em <b>Ligações → Apagar a minha conta</b>. Os treinos que o treinador importou dos seus próprios exports do TrainingPeaks ficam com ele: pede-lhe para os remover.</p>
+<h2>Os teus direitos</h2>
+<p>Podes pedir acesso, correção ou eliminação dos teus dados ao teu treinador ou pelo contacto da página <a href="/suporte">Suporte</a>, nos termos do RGPD.</p>
+{% else %}
+<h1>Suporte</h1>
+<p>Precisas de ajuda com o Tri Squad?</p>
+<ul>
+<li><b>Acesso e conta:</b> cria a tua conta em Criar conta, no ecrã de entrada; o teu treinador associa-a aos teus dados. Esqueceste-te da palavra-passe? No ecrã de entrada, carrega em "Esqueci-me da palavra-passe" e recebes um link por email.</li>
+<li><b>Ligar o TrainingPeaks e o Intervals.icu:</b> depois de entrares, abre <b>Ligações</b> no topo da página; tem as instruções passo a passo.</li>
+<li><b>Sem dados novos:</b> os treinos entram todos os dias às 5h. Confirma em Ligações que o Intervals.icu e o calendário do TrainingPeaks estão "ligados".</li>
+<li><b>Apagar a conta:</b> em Ligações → Apagar a minha conta.</li>
+</ul>
+<h2>Contacto</h2>
+{% if email %}<p>Escreve para <a href="mailto:{{ email }}">{{ email }}</a>. Respondemos normalmente em 2 dias úteis.</p>
+{% else %}<p>Fala com o teu treinador, que encaminha o pedido ao administrador da app.</p>{% endif %}
+{% endif %}
+</main></body></html>

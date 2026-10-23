@@ -1,0 +1,28 @@
+<!doctype html><html lang="pt"><head><meta charset="utf-8">{{ pwa_head|safe }}<title>Tri Squad · à espera do treinador</title>
+<style>
+:root{color-scheme:light dark;--plane:#f4f4f0;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--grid:#e1e0d9}
+@media(prefers-color-scheme:dark){:root{--plane:#111311;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a}}
+body{margin:0;background:var(--plane);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;padding:16px;line-height:1.55}
+main{max-width:520px;margin:48px auto;background:var(--surface);border:1px solid var(--grid);border-radius:10px;padding:24px;display:grid;gap:12px}
+h1{font-size:22px;margin:0}p,li{margin:0;color:var(--ink2);font-size:15px}a{color:var(--ink)}
+button{font:inherit;padding:8px 12px;border:1px solid var(--grid);border-radius:8px;background:none;color:var(--ink);cursor:pointer}
+img{width:64px;height:64px;border-radius:14px}
+</style></head><body><main>
+<img src="/static/icons/icon-192.png" alt="">
+{% if waiting_coach %}
+<h1>Conta criada, {{ name }}</h1>
+<p>O teu treinador já foi avisado. Quando associar a tua conta aos teus dados do TrainingPeaks, esta página passa a mostrar os teus treinos. Recebes uma notificação se tiveres a app instalada.</p>
+<p>Entretanto, prepara as ligações: no TrainingPeaks, liga o relógio em Settings → Apps &amp; Devices; cria conta grátis no <a href="https://intervals.icu" target="_blank" rel="noopener">Intervals.icu</a> e liga lá o relógio. Depois da associação colas o link e a chave na página Ligações.</p>
+{% else %}
+<h1>Quase pronto, {{ name }}</h1>
+<p>A tua conta já está associada. Os teus dados aparecem depois da próxima sincronização, todos os dias às 5h.</p>
+<p>Para começar já com os treinos do relógio e o plano do treinador, abre <a href="/ligacoes">Ligações</a> e liga o Intervals.icu e o calendário do TrainingPeaks.</p>
+{% endif %}
+<form method="post" action="/logout"><button type="submit">Sair</button></form>
+<details><summary>Apagar a minha conta</summary>
+<form method="post" action="/conta/apagar" style="display:grid;gap:8px;margin-top:8px">
+<p>Apaga a conta e tudo o que ligaste ou escreveste. Escreve APAGAR para confirmar.</p>
+<input name="confirm" type="text" autocomplete="off" style="font:inherit;font-size:16px;padding:8px;border:1px solid var(--grid);border-radius:8px;background:var(--plane);color:var(--ink)">
+<button type="submit" style="color:#d03b3b">Apagar a minha conta</button></form></details>
+<p><a href="/suporte">Suporte</a> · <a href="/privacidade">Privacidade</a></p>
+</main></body></html>
